@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       name,
       email,
       passwordHash,
-      role: "admin"
+      role: "member"
     });
 
     return NextResponse.json(
@@ -46,13 +46,6 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (err: any) {
-    if (err?.code === 11000) {
-      return NextResponse.json(
-        { success: false, error: {message: "User already exists" } },
-        { status: 409 }
-      );
-    }
-
     return NextResponse.json(
       { success: false, error: {message: "Something went wrong" } },
       { status: 500 }

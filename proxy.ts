@@ -10,14 +10,10 @@ export async function proxy(request: NextRequest) {
 
     if(!isValid){
 
-        // const loginUrl = new URL('/login', request.url);
-        // loginUrl.searchParams.set('from', request.nextUrl.pathname);
-        // return NextResponse.redirect(loginUrl);
+        const loginUrl = new URL('/login', request.url);
+        loginUrl.searchParams.set('from', request.nextUrl.pathname);
+        return NextResponse.redirect(loginUrl);
 
-        return NextResponse.json(
-        { success: false, message: "Unauthorized" },
-        { status: 403 }
-        );
     }
    
   }
