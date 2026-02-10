@@ -17,11 +17,9 @@ export default function Login() {
     setLoading(true);
     e.preventDefault();
 
-    const formData = new FormData(e.currentTarget);
-
     const data = {
-      email: formData.get("email") as string,
-      password: formData.get("password") as string,
+      email: email,
+      password: password
     };
 
     try {
@@ -61,7 +59,6 @@ export default function Login() {
           <input
             type="email"
             id="email"
-            name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="border p-1 w-64 rounded-lg px-2"
@@ -71,7 +68,6 @@ export default function Login() {
           <input
             type="password"
             id="password"
-            name="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="border p-1 w-64 rounded-lg px-2"

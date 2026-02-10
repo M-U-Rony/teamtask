@@ -66,8 +66,8 @@ import { useRouter } from "next/navigation";
     return(
         <div className="flex items-center justify-between p-4 border-b-2 border-gray-300">
             <Toaster/>
-            <h1 className="font-bold">TeamTask</h1>
-            {loading ? "" : (user ? <button  className="cursor-pointer" onClick={handleLogout}>Logout</button> : null)}
+            <h1 className="font-bold text-3xl">TeamTask</h1>
+            {loading ? "" : (user ? <button  className="cursor-pointer border rounded-md p-2 bg-gray-200 font-semibold hover:bg-gray-300" onClick={handleLogout}>Logout</button> : null)}
 
         </div>
     )
