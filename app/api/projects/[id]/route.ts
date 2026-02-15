@@ -1,12 +1,10 @@
 import DBconnect from "@/lib/db";
 import { authMiddleware } from "@/lib/middleware";
-import { projectSchema } from "@/lib/zodSchema";
-import { Project, User } from "@/models/model";
-import mongoose from "mongoose";
+import { Project} from "@/models/model";
 import { NextRequest, NextResponse } from "next/server";
 
 
-export async function GET(req:NextRequest,{params }: { params: { projectId: string } }) {
+export async function GET(req:NextRequest,{params }: { params: { id: string } }) {
 
     const user = authMiddleware(req);
             
@@ -18,9 +16,9 @@ export async function GET(req:NextRequest,{params }: { params: { projectId: stri
 
        await DBconnect();
 
-      const { projectId } = params;
-
-       const project = await Project.findById(projectId).lean();
+      const { id } = await params;
+      
+      const project = await Project.findById(id).lean();
 
        if(!project){
         return NextResponse.json({success: false,message: "Not found"},{status: 404});
@@ -31,13 +29,13 @@ export async function GET(req:NextRequest,{params }: { params: { projectId: stri
         return NextResponse.json({success: true,project: project},{status: 200});
        }
 
-       const isBelong = project.filter((p:any) => user.userId == p.members.includes(user.userId));
+       const isBelong = project.members.some((p: any) => String(p) === user.userId);
 
        if(!isBelong){
         return NextResponse.json({success: false,message: "forbidden"},{status: 403});
        }
 
-    return NextResponse.json({success: true, project: isBelong},{status: 200});
+    return NextResponse.json({success: true, project: project},{status: 200});
         
     } catch (error) {
         console.log(error)

@@ -2,7 +2,6 @@
 import LoadingSpinner from "@/components/loadingSpinner";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import Allmembers from "./allMembersModal";
 
 type ProjectCreationFormProps = {
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -14,8 +13,6 @@ export default function ProjectCreationForm({
   const [name, setname] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showAllmembersmodal, setshowAllmembersModal] = useState(false);
-  const [selectedMember, setSelectedMember] = useState<string[]>([]);
 
   async function handleCreate(e: React.SubmitEvent<HTMLFormElement>) {
     setLoading(true);
@@ -24,7 +21,6 @@ export default function ProjectCreationForm({
     const data = {
       name: name,
       description: description,
-      members: selectedMember,
     };
 
     try {
@@ -45,6 +41,7 @@ export default function ProjectCreationForm({
       toast.success(result.message || "Project Created");
       setname("");
       setDescription("");
+      window.location.reload();
     } catch (error) {
       toast.error("Project Creation failed");
     } finally {
@@ -54,68 +51,84 @@ export default function ProjectCreationForm({
   }
 
   return (
-    <div className="flex items-center justify-center h-full">
+    <div className="w-full max-w-xl mx-auto">
       <Toaster />
-      <div className="flex flex-col items-center justify-center border border-black p-16 rounded-lg">
-        <h1 className="text-3xl font-bold">Create New Project</h1>
 
-        <form
-          onSubmit={handleCreate}
-          className="flex flex-col items-start gap-2 p-4"
-        >
-          <label htmlFor="name">Project Name</label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setname(e.target.value)}
-            className="border p-1 w-64 rounded-lg px-2"
-            required
-          />
-          <label htmlFor="description">Description</label>
-          <input
-            type="text"
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="border h-20 w-64 rounded-lg px-2"
-            required
-          />
+      <div className="bg-white rounded-xl shadow-md p-6 sm:p-8">
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-semibold text-slate-900">
+              Create New Project
+            </h1>
+            <p className="mt-1 text-sm text-slate-500">
+              Add a name, description and invite teammates.
+            </p>
+          </div>
 
           <button
-            className="font-semibold p-2 bg-blue-500 hover:bg-blue-600 m-2 rounded-md cursor-pointer
-          "
-            onClick={() => setshowAllmembersModal(true)}
-            type="button"
+            aria-label="Close create project"
+            className="text-slate-500 hover:text-slate-700 ml-4 cursor-pointer"
+            onClick={() => {
+              setShowForm(false);
+            }}
           >
-            Add Members
+            ✕
           </button>
+        </div>
 
-          {loading ? (
-            <button
-              type="button"
-              disabled
-              className="cursor-pointer p-2 rounded-lg w-full bg-black mt-4 text-white flex items-center justify-center"
+        <form onSubmit={handleCreate} className="mt-6 space-y-4">
+          <div>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-slate-700"
             >
-              <LoadingSpinner />
-            </button>
-          ) : (
-            <button
-              type="submit"
-              className="cursor-pointer p-2 rounded-lg w-full bg-black hover:bg-gray-800 mt-4 text-white"
+              Project name
+            </label>
+            <input
+              id="name"
+              value={name}
+              onChange={(e) => setname(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-300"
+              required
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="description"
+              className="block text-sm font-medium text-slate-700"
             >
-              Submit
-            </button>
-          )}
+              Description
+            </label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
+              className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 resize-vertical focus:outline-none focus:ring-2 focus:ring-slate-300"
+            />
+          </div>
+
+          <div>
+            {loading ? (
+              <button
+                type="button"
+                disabled
+                className="w-full inline-flex items-center justify-center rounded-md bg-slate-900 text-white py-2"
+              >
+                <LoadingSpinner />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="w-full rounded-md bg-slate-900 text-white py-2 cursor-pointer"
+              >
+                Create project
+              </button>
+            )}
+          </div>
         </form>
       </div>
-      {showAllmembersmodal ? (
-        <Allmembers
-          setSelectedMember={setSelectedMember}
-          selectedMember={selectedMember}
-          setshowAllmembersModal={setshowAllmembersModal}
-        />
-      ) : null}
     </div>
   );
 }

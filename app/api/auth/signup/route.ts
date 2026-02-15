@@ -33,8 +33,7 @@ export async function POST(req: NextRequest) {
     const user = await User.create({
       name,
       email,
-      passwordHash,
-      role: "member"
+      passwordHash
     });
 
     return NextResponse.json(

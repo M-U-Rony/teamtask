@@ -6,7 +6,6 @@ import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function Login() {
-
   const router = useRouter();
 
   const [password, setPassword] = useState("");
@@ -17,10 +16,7 @@ export default function Login() {
     setLoading(true);
     e.preventDefault();
 
-    const data = {
-      email: email,
-      password: password
-    };
+    const data = { email, password };
 
     try {
       const res = await fetch("/api/auth/login", {
@@ -49,49 +45,78 @@ export default function Login() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <Toaster />
-      <div className="flex flex-col items-center justify-center border border-black p-16 rounded-lg">
-        <h1 className="text-3xl font-bold">Login</h1>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-2 p-4">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border p-1 w-64 rounded-lg px-2"
-            required
-          />
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="border p-1 w-64 rounded-lg px-2"
-            required
-          />
-          {loading ? (
-            <button
-              type="button"
-              disabled
-              className="cursor-pointer p-2 rounded-lg  bg-black mt-4 text-white flex items-center justify-center"
+      <div className="w-full max-w-md bg-white rounded-xl shadow-md p-8">
+        <h2 className="text-2xl font-semibold text-slate-900 text-center">
+          Sign in to your account
+        </h2>
+        <p className="mt-2 text-sm text-slate-500 text-center">
+          Welcome back — enter your credentials below.
+        </p>
+
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-slate-700"
             >
-              <LoadingSpinner />
-            </button>
-          ) : (
-            <button
-              type="submit"
-              className="cursor-pointer p-2 rounded-lg bg-black mt-4 text-white"
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-300"
+              required
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-slate-700"
             >
-              Submit
-            </button>
-          )}
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-300"
+              required
+            />
+          </div>
+
+          <div className="mt-4">
+            {loading ? (
+              <button
+                type="button"
+                disabled
+                className="w-full inline-flex items-center justify-center rounded-md bg-slate-900 text-white py-2"
+              >
+                <LoadingSpinner />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="w-full rounded-md bg-slate-900 text-white py-2 cursor-pointer"
+              >
+                Sign in
+              </button>
+            )}
+          </div>
         </form>
 
-        <p className="text-gray-700">Don't have an account? <Link href={'/signup'} className="font-bold text-blue-700">Signup</Link></p>
+        <p className="mt-6 text-center text-sm text-slate-600">
+          Don't have an account?{" "}
+          <Link href="/signup" className="font-medium text-slate-900">
+            Create one
+          </Link>
+        </p>
       </div>
     </div>
   );

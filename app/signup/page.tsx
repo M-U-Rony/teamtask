@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
-
 export default function Signup() {
   const router = useRouter();
 
@@ -20,7 +19,6 @@ export default function Signup() {
 
     const data = { name, email, password };
 
-
     try {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
@@ -29,7 +27,6 @@ export default function Signup() {
       });
 
       const result = await res.json();
-      console.log(result);
 
       if (!res.ok) {
         toast.error(result.error?.message || "Signup failed");
@@ -50,58 +47,95 @@ export default function Signup() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <Toaster />
-      <div className="flex flex-col items-center justify-center border border-black p-16 rounded-lg">
-        <h1 className="text-3xl font-bold">SignUp</h1>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-2 p-4">
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="border p-1 w-64 rounded-lg px-2"
-            required
-          />
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border p-1 w-64 rounded-lg px-2"
-            required
-          />
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="border p-1 w-64 rounded-lg px-2"
-            required
-          />
-          {loading ? (
-            <button
-              type="button"
-              disabled
-              className="cursor-pointer p-2 rounded-lg  bg-black mt-4 text-white flex items-center justify-center"
+      <div className="w-full max-w-md bg-white rounded-xl shadow-md p-8">
+        <h2 className="text-2xl font-semibold text-slate-900 text-center">
+          Create your account
+        </h2>
+        <p className="mt-2 text-sm text-slate-500 text-center">
+          Join TeamTask and start organizing your work.
+        </p>
+
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <div>
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-slate-700"
             >
-              <LoadingSpinner />
-            </button>
-          ) : (
-            <button
-              type="submit"
-              className="cursor-pointer p-2 rounded-lg bg-black mt-4 text-white"
+              Name
+            </label>
+            <input
+              type="text"
+              id="username"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-300"
+              required
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-slate-700"
             >
-              Submit
-            </button>
-          )}
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-300"
+              required
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-slate-700"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-300"
+              required
+            />
+          </div>
+
+          <div className="mt-4">
+            {loading ? (
+              <button
+                type="button"
+                disabled
+                className="w-full inline-flex items-center justify-center rounded-md bg-slate-900 text-white py-2"
+              >
+                <LoadingSpinner />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="w-full rounded-md bg-slate-900 text-white py-2"
+              >
+                Create account
+              </button>
+            )}
+          </div>
         </form>
 
-        <p className="text-gray-700">Already have an account? <Link href={'/login'} className="font-bold text-blue-700">Login</Link></p>
+        <p className="mt-6 text-center text-sm text-slate-600">
+          Already have an account?{" "}
+          <Link href="/login" className="font-medium text-slate-900">
+            Sign in
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -8,9 +8,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req:NextRequest) {
 
-    const isAdmin = authMiddleware(req);
+    const user = authMiddleware(req);
             
-    if(!isAdmin || isAdmin?.role !== 'admin'){
+    if(!user){
         return NextResponse.json({success: false,message: "Unauthorized"},{status: 401});
     }
 
@@ -31,13 +31,13 @@ export async function POST(req:NextRequest) {
 
 
     const { name, description, members } = parsed.data;
-    members.push(isAdmin.userId)
+    members.push(user.userId)
 
     const newProject = await Project.create({
         name,
         description,
         members,
-        createdBy: new mongoose.Types.ObjectId(isAdmin.userId)
+        createdBy: new mongoose.Types.ObjectId(user.userId)
     })
 
     return NextResponse.json({success: true, message: "Project created",data: newProject},{status: 201});
@@ -52,6 +52,7 @@ export async function POST(req:NextRequest) {
     
 }
 
+
 export async function GET(req:NextRequest) {
 
     const user = authMiddleware(req);
@@ -64,15 +65,12 @@ export async function GET(req:NextRequest) {
 
        await DBconnect();
        
-
        const allProjects = await Project.find().lean();
 
-       if(user.role === 'admin'){
 
-        return NextResponse.json({success: true,projects: allProjects},{status: 200});
-       }
-
-       const myProject = allProjects.filter((p) => user.userId == p.members.includes(user.userId))
+       const myProject = allProjects.filter((p) => 
+        p.members.some(m => m.equals(new mongoose.Types.ObjectId(user.userId)))
+        );
 
     return NextResponse.json({success: true, projects: myProject},{status: 200});
         

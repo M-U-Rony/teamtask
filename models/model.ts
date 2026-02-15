@@ -22,21 +22,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
-    role: {
-      type: String,
-      enum: ["admin", "member"],
-      default: "member",
-    },
-
-    isDisabled: {
-      type: Boolean,
-      default: false,
-    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const ProjectSchema = new mongoose.Schema(
@@ -68,9 +57,31 @@ const ProjectSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-export const Project = mongoose.models.Project || mongoose.model("Project", ProjectSchema);
+const taskSchema = new mongoose.Schema(
+  {
+    name: String,
+    belongTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project",
+      required: true,
+    },
+
+    members: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+export const Project =
+  mongoose.models.Project || mongoose.model("Project", ProjectSchema);
 
 export const User = mongoose.models.User || mongoose.model("User", userSchema);
+
+export const Task = mongoose.models.Task || mongoose.model("Task", taskSchema);

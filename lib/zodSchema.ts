@@ -35,7 +35,6 @@ export const projectSchema = z.object({
   members: z.array(objectIdSchema).optional().default([]),
 })
 
-export const addOrremoveSchema = z.object({
-  operation: z.enum(["add","remove"]),
-  users: z.array(objectIdSchema),
+export const invitationSchema =  z.object({
+  email: z.email()
 })

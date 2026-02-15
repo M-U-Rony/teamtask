@@ -1,7 +1,7 @@
 import DBconnect from "@/lib/db";
 import { authMiddleware } from "@/lib/middleware";
-import { projectSchema,addOrremoveSchema } from "@/lib/zodSchema";
-import { Project, User } from "@/models/model";
+import { addOrremoveSchema } from "@/lib/zodSchema";
+import { Project} from "@/models/model";
 import { NextRequest, NextResponse } from "next/server";
 
 

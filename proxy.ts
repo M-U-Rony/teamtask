@@ -18,19 +18,9 @@ export async function proxy(request: NextRequest) {
    
   }
 
-  else if (request.nextUrl.pathname.startsWith('/admin')) {
-
-    const isValid = await authMiddleware(request);
-
-    if(!isValid || isValid.role !== "admin"){
-        return NextResponse.json({success: false,message: "Forbidden"},{status: 403});
-    }
-   
-  }
-
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/admin/:path*'],
+  matcher: ['/dashboard/:path*'],
 };
