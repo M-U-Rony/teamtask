@@ -17,9 +17,7 @@ export default function InviteMembersModal({
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
-
   async function sendInvite() {
-
     setLoading(true);
 
     try {
@@ -32,9 +30,9 @@ export default function InviteMembersModal({
       const data = await res.json();
 
       if (!res.ok) {
-          toast.error(data?.message || "Failed to send invitation");
-          return;
-        }
+        toast.error(data?.message || "Failed to send invitation");
+        return;
+      }
 
       toast.success("Invitation sent");
       setEmail("");
@@ -56,7 +54,6 @@ export default function InviteMembersModal({
             <h2 className="text-lg font-semibold text-slate-900">
               Invite member
             </h2>
-
           </div>
           <button
             aria-label="Close invite modal"

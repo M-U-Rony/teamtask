@@ -42,22 +42,6 @@ export default function Project() {
     fetchProject();
   }, []);
 
-  async function handleRemoveMember(memberId: string) {
-    try {
-      const res = await fetch(`/api/projects/${id}/members`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ operation: "remove", users: [memberId] }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setProject(data.project);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   if (loading) return null;
 
   if (!project) {

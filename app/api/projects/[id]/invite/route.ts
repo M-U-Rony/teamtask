@@ -1,11 +1,11 @@
 import DBconnect from "@/lib/db";
 import { authMiddleware } from "@/lib/middleware";
 import { invitationSchema} from "@/lib/zodSchema";
-import { User } from "@/models/model";
+import { Invitation, User } from "@/models/model";
 import { NextRequest, NextResponse } from "next/server";
 
 
-export async function POST(req:NextRequest) {
+export async function POST(req:NextRequest,{params }: { params: { id: string }}) {
 
     const user = authMiddleware(req);
             
@@ -18,6 +18,7 @@ export async function POST(req:NextRequest) {
        await DBconnect();
 
        const body = await req.json();
+       const { id } = await params;
 
        const parsed = invitationSchema.safeParse(body);
        
@@ -31,13 +32,20 @@ export async function POST(req:NextRequest) {
 
     const  {email} = parsed.data;
 
-    const user = await User.findOne({email: email}).select("_id name email").lean();
+    const member = await User.findOne({email: email}).select("_id name email").lean();
+    const curUser = await User.findById(user.userId).select("name").lean();
     
-    if(!user){
+    if(!member){
         return NextResponse.json({success: true, message: "User doesn't exist"},{status: 404});
     }
 
-    
+    const invitation = {
+        belongsTo : member._id,
+        invitedBy: curUser.name,
+        projectId :id
+    }
+
+    await Invitation.create(invitation);
    
 
     return NextResponse.json({success: true, message: "Invitation Sent"},{status: 200});

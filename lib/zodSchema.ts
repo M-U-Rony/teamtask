@@ -38,3 +38,17 @@ export const projectSchema = z.object({
 export const invitationSchema =  z.object({
   email: z.email()
 })
+
+export const acceptInvitationSchema = z.object({
+  userId: z.string(),
+  projectId: z.string(),
+  notificationId: z.string() 
+})
+
+export const rejectInvitationSchema = z.object({
+  notificationId: z.string() 
+})
+
+export const clearInvitationSchema = z.object({
+  userId: z.string() 
+})

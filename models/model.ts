@@ -79,9 +79,36 @@ const taskSchema = new mongoose.Schema(
   },
 );
 
-export const Project =
-  mongoose.models.Project || mongoose.model("Project", ProjectSchema);
+const invitationSchema = new mongoose.Schema({
+
+  belongsTo :{
+    type: String,
+    ref: "User",
+    required: true
+  },
+
+  invitedBy: {
+    type: String,
+    ref: "User",
+    required: true
+  },
+
+  projectId : {
+    type: String,
+    ref: 'Project',
+    required: true
+  },
+
+  message: {
+    type: String,
+    default: ""
+  }
+
+})
+
+export const Project = mongoose.models.Project || mongoose.model("Project", ProjectSchema);
 
 export const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 export const Task = mongoose.models.Task || mongoose.model("Task", taskSchema);
+export const Invitation = mongoose.models.Invitation || mongoose.model("Invitation", invitationSchema);

@@ -3,7 +3,6 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 
 export type AuthData = {
   userId: string;
-  role: "admin" | "member";
 };
 
 export function authMiddleware(request: NextRequest): AuthData | null {
@@ -14,11 +13,10 @@ export function authMiddleware(request: NextRequest): AuthData | null {
     const payload = jwt.verify(token, process.env.JWT_ACCESS_SECRET!) as JwtPayload;
 
     const userId = payload.userId;
-    const role = payload.role;
 
-    if (!userId || !role) return null;
+    if (!userId) return null;
 
-    return { userId: String(userId), role };
+    return { userId: String(userId)};
   } catch {
     return null;
   }

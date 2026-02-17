@@ -29,13 +29,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (user.isDisabled) {
-      return NextResponse.json(
-        { success: false, error: { message: "Account disabled" } },
-        { status: 403 }
-      );
-    }
-
     const ok = await bcrypt.compare(password, user.passwordHash);
 
     if (!ok) {
@@ -46,7 +39,7 @@ export async function POST(req: NextRequest) {
     }
 
     const accessToken = jwt.sign(
-      { userId: String(user._id), role: user.role },
+      { userId: String(user._id)},
       process.env.JWT_ACCESS_SECRET!,
       { expiresIn: "1d" }
     );

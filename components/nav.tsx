@@ -6,17 +6,25 @@ import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
+interface Invitation {
+  _id: string;
+  belongsTo: string;
+  invitedBy: string;
+  projectId: string;
+  message: string;
+}
+
 export default function Navbar() {
   const { user, setUser } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [showHistory, setShowHistory] = useState(false);
-  const [notifications, setNotifications] = useState<
-    Array<{ id: string; title: string; message: string; time: string }>
-  >([]);
+  const [notifications, setNotifications] = useState<Invitation[]>([]);
   const historyRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
+  const [history, setHistory] = useState(false);
 
+  // fetch auth on mount
   useEffect(() => {
     async function fetchmyInfo() {
       try {
@@ -49,40 +57,6 @@ export default function Navbar() {
 
     fetchmyInfo();
 
-    async function fetchNotifications() {
-      try {
-        const res = await fetch("/api/notifications", { method: "GET" });
-        if (!res.ok) throw new Error("no notifications api");
-        const data = await res.json();
-        setNotifications(data.notifications ?? []);
-      } catch (err) {
-        // fallback sample history
-        setNotifications([
-          {
-            id: "1",
-            title: "Project created",
-            message: "You created 'Class Project'",
-            time: "2 days ago",
-          },
-          {
-            id: "2",
-            title: "Member invited",
-            message: "You invited Alice to 'Second Project'",
-            time: "3 days ago",
-          },
-          {
-            id: "3",
-            title: "Task assigned",
-            message: "Bob assigned you a task",
-            time: "5 days ago",
-          },
-        ]);
-      }
-    }
-
-    fetchNotifications();
-
-    // click-outside handler to close the history dropdown
     function onDocClick(e: MouseEvent) {
       if (
         showHistory &&
@@ -95,6 +69,30 @@ export default function Navbar() {
     document.addEventListener("mousedown", onDocClick);
     return () => document.removeEventListener("mousedown", onDocClick);
   }, []);
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    async function fetchNotifications() {
+      try {
+        const res = await fetch(`/api/notifications?id=${user?.id}`, {
+          method: "GET",
+        });
+        if (!res.ok) {
+          setNotifications([]);
+          return;
+        }
+
+        const data = await res.json();
+        // console.log(data.notifications);
+        setNotifications(data.notifications ?? []);
+      } catch (err) {
+        setNotifications([]);
+      }
+    }
+
+    fetchNotifications();
+  }, [user?.id, history]);
 
   async function handleLogout() {
     const res = await fetch("/api/auth/logout", {
@@ -112,6 +110,70 @@ export default function Navbar() {
     window.location.reload();
   }
 
+  async function acceptInvite(
+    userId: string,
+    projectId: string,
+    notificationId: string,
+  ) {
+    try {
+      const res = await fetch("/api/invitation/accept", {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify({ userId, projectId, notificationId }),
+      });
+
+      if (!res.ok) {
+        toast.error("Something Wrong");
+        return;
+      }
+      setHistory((pre) => !pre);
+      toast.success("Invitation accepted");
+    } catch (err) {
+      toast.error("Something Wrong");
+      console.log(err);
+    }
+  }
+
+  async function rejectInvite(notificationId: string) {
+    try {
+      const res = await fetch("/api/invitation/reject", {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify({ notificationId }),
+      });
+
+      if (!res.ok) {
+        toast.error("Something wrong");
+        return;
+      }
+       setHistory((pre) => !pre);
+      toast.success("Invitation rejected");
+    } catch (err) {
+      toast.error("Something wrong");
+    }
+  }
+
+  async function clearNotifications(userId: string) {
+    try {
+      const res = await fetch("/api/invitation/clear", {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+
+      if (!res.ok) {
+        toast.error("Something wrong");
+        return;
+      }
+
+      setNotifications([]);
+
+      toast.success("History cleared");
+    } catch (err) {
+      toast.error("Something wrong");
+    }
+  }
+
   return (
     <header className="w-full bg-white shadow-sm">
       <Toaster />
@@ -126,7 +188,6 @@ export default function Navbar() {
         <div>
           {loading ? null : user ? (
             <div className="flex items-center gap-3">
-              {/* Notification button + history dropdown */}
               <div className="relative" ref={historyRef}>
                 <button
                   aria-label="Notifications"
@@ -154,11 +215,7 @@ export default function Navbar() {
                       strokeLinejoin="round"
                     />
                   </svg>
-                  {notifications.length > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center rounded-full bg-rose-500 text-white text-[10px] px-1.5 py-0.5">
-                      {notifications.length}
-                    </span>
-                  )}
+                 
                 </button>
 
                 {showHistory && (
@@ -166,7 +223,7 @@ export default function Navbar() {
                     <div className="p-3 border-b border-slate-100 flex items-center justify-between">
                       <strong className="text-sm">History</strong>
                       <button
-                        onClick={() => setNotifications([])}
+                        onClick={() => clearNotifications(user.id)}
                         className="text-xs text-slate-500 hover:text-slate-700"
                       >
                         Clear
@@ -180,17 +237,45 @@ export default function Navbar() {
                       ) : (
                         notifications.map((n) => (
                           <div
-                            key={n.id}
-                            className="p-3 hover:bg-slate-50 border-b last:border-b-0"
+                            key={n._id}
+                            className="p-3 hover:bg-slate-50 border-b last:border-b-0 flex items-start gap-3"
                           >
-                            <div className="text-sm font-semibold text-slate-900">
-                              {n.title}
+                            <div className="flex-shrink-0 h-9 w-9 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm font-semibold">
+                              {n.invitedBy.charAt(0)}
                             </div>
-                            <div className="text-sm text-slate-600">
-                              {n.message}
-                            </div>
-                            <div className="text-xs text-slate-400 mt-1">
-                              {n.time}
+
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <div className="text-sm font-semibold text-slate-900 truncate">
+                                  {n.invitedBy} invited you to a project
+                                </div>
+                              </div>
+
+                              {n.message !== "" ? (
+                                <p>{n.message}</p>
+                              ) : (
+                                <div className="mt-2 flex items-center gap-2">
+                                  <button
+                                    onClick={() =>
+                                      acceptInvite(
+                                        n.belongsTo,
+                                        n.projectId,
+                                        n._id,
+                                      )
+                                    }
+                                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-emerald-600 text-white text-xs hover:bg-emerald-700"
+                                  >
+                                    Accept
+                                  </button>
+
+                                  <button
+                                    onClick={() => rejectInvite(n._id)}
+                                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-200 text-xs text-slate-700 hover:bg-slate-50"
+                                  >
+                                    Reject
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           </div>
                         ))

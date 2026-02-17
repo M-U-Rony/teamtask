@@ -24,11 +24,7 @@ export async function GET(req:NextRequest,{params }: { params: { id: string } })
         return NextResponse.json({success: false,message: "Not found"},{status: 404});
        }
 
-       if(user.role === 'admin'){
-
-        return NextResponse.json({success: true,project: project},{status: 200});
-       }
-
+    
        const isBelong = project.members.some((p: any) => String(p) === user.userId);
 
        if(!isBelong){
