@@ -52,3 +52,9 @@ export const rejectInvitationSchema = z.object({
 export const clearInvitationSchema = z.object({
   userId: z.string() 
 })
+
+export const taskSchema = z.object({
+  name: z.string().min(2).trim(),
+  description: z.string().trim().optional(),
+  members: z.array(objectIdSchema).optional().default([]),
+})

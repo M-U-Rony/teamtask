@@ -2,13 +2,16 @@
 import LoadingSpinner from "@/components/loadingSpinner";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import Allmembers from "./allmembersmodal";
 
 type taskCreationFormProps = {
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
+  projectId: string
 };
 
 export default function TaskCreationForm({
   setShowForm,
+  projectId
 }: taskCreationFormProps) {
   const [name, setname] = useState("");
   const [description, setDescription] = useState("");
@@ -27,7 +30,7 @@ export default function TaskCreationForm({
     };
 
     try {
-      const res = await fetch("/api/projects", {
+      const res = await fetch(`/api/projects/${projectId}/createTask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -41,11 +44,11 @@ export default function TaskCreationForm({
         return;
       }
 
-      toast.success(result.message || "Project Created");
+      toast.success(result.message || "task Created");
       setname("");
       setDescription("");
     } catch (error) {
-      toast.error("Project Creation failed");
+      toast.error("task Creation failed");
     } finally {
       setLoading(false);
       setShowForm(false);
@@ -53,61 +56,86 @@ export default function TaskCreationForm({
   }
 
   return (
-    <div className="flex items-center justify-center h-full">
+    <div className="w-full max-w-xl mx-auto">
       <Toaster />
-      <div className="flex flex-col items-center justify-center border border-black p-16 rounded-lg">
-        <div className="flex items-center justify-between gap-4">
-
-        <h1 className="text-3xl font-bold">Create New Task</h1>
-        <button className="cursor-pointer font-semibold" onClick={()=> {setShowForm(false); setSelectedMember([])}}>X</button>
+      <div className="bg-white rounded-xl shadow-md p-6 sm:p-8">
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-semibold text-slate-900">
+              Create New Task
+            </h1>
+            <p className="mt-1 text-sm text-slate-500">
+              Add task details and assign teammates.
+            </p>
+          </div>
+          <button
+            aria-label="Close create task"
+            className="text-slate-500 hover:text-slate-700 ml-4 cursor-pointer"
+            onClick={() => {
+              setShowForm(false);
+              setSelectedMember([]);
+            }}
+          >
+            X
+          </button>
         </div>
 
-        <form
-          onSubmit={handleCreate}
-          className="flex flex-col items-start gap-2 p-4"
-        >
-          <label htmlFor="name">Name</label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setname(e.target.value)}
-            className="border p-1 w-64 rounded-lg px-2"
-            required
-          />
-          <label htmlFor="description">Description</label>
-          <input
-            type="text"
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="border h-20 w-64 rounded-lg px-2"
-            required
-          />
+        <form onSubmit={handleCreate} className="mt-6 space-y-4">
+          <div>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-slate-700"
+            >
+              Task name
+            </label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setname(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-300"
+              required
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="description"
+              className="block text-sm font-medium text-slate-700"
+            >
+              Description
+            </label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
+              className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 resize-vertical focus:outline-none focus:ring-2 focus:ring-slate-300"
+            />
+          </div>
 
           <button
-            className="font-semibold p-2 bg-blue-500 hover:bg-blue-600 m-2 rounded-md cursor-pointer
-          "
+            className="w-full rounded-md border border-slate-200 text-slate-700 py-2 hover:bg-slate-50 cursor-pointer"
             onClick={() => setshowAllmembersModal(true)}
             type="button"
           >
-            Add Members
+            Assign To
           </button>
 
           {loading ? (
             <button
               type="button"
               disabled
-              className="cursor-pointer p-2 rounded-lg w-full bg-black mt-4 text-white flex items-center justify-center"
+              className="w-full inline-flex items-center justify-center rounded-md bg-slate-900 text-white py-2"
             >
               <LoadingSpinner />
             </button>
           ) : (
             <button
               type="submit"
-              className="cursor-pointer p-2 rounded-lg w-full bg-black hover:bg-gray-800 mt-4 text-white"
+              className="w-full rounded-md bg-slate-900 text-white py-2 cursor-pointer"
             >
-              Submit
+              Create task
             </button>
           )}
         </form>
@@ -117,6 +145,7 @@ export default function TaskCreationForm({
           setSelectedMember={setSelectedMember}
           selectedMember={selectedMember}
           setshowAllmembersModal={setshowAllmembersModal}
+          projectId={projectId}
         />
       ) : null}
     </div>

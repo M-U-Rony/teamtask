@@ -1,5 +1,6 @@
 "use client";
 
+import mongoose from "mongoose";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -7,6 +8,7 @@ interface Project {
   _id: string;
   name: string;
   description?: string;
+  members: Array<mongoose.Types.ObjectId>
 }
 
 export default function Allprojects() {
@@ -28,6 +30,7 @@ export default function Allprojects() {
         }
 
         const data = await res.json();
+        console.log(data.projects);
         setAllProjects(data.projects ?? []);
       } catch (error: any) {
         console.error("Error fetching projects:", error);
@@ -41,19 +44,18 @@ export default function Allprojects() {
   return (
     <div className="">
       {allprojects && allprojects.length > 0 ? (
-        <ul className="flex gap-4 flex-wrap" >
+        <ul className="flex gap-4 flex-wrap">
           {allprojects.map((p) => (
             <li
               key={p._id}
               onClick={() => router.push(`/dashboard/${p._id}/project`)}
               className="relative w-full sm:w-auto max-w-sm mx-auto overflow-hidden group cursor-pointer"
             >
-
-              <div className="relative z-10 overflow-hidden rounded-[1.75rem] border border-sky-100/90 bg-gradient-to-br from-white via-slate-50/90 to-slate-200/60 shadow-[0_24px_45px_-30px_rgba(15,23,42,0.5)] transition-all duration-300 group-hover:-translate-y-1 ">
+              <div className="relative z-10 overflow-hidden rounded-[1.75rem] border border-sky-100/90 bg-linear-to-br from-white via-slate-50/90 to-slate-200/60 shadow-[0_24px_45px_-30px_rgba(15,23,42,0.5)] transition-all duration-300 group-hover:-translate-y-1 ">
                 <div className="p-3 sm:p-4">
                   <div className="flex items-center gap-2 sm:gap-3">
                     <div className="shrink-0">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 to-indigo-600 shadow-[0_14px_24px_-14px_rgba(37,99,235,0.9)] sm:h-10 sm:w-10">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-linear-to-br from-sky-500 to-indigo-600 shadow-[0_14px_24px_-14px_rgba(37,99,235,0.9)] sm:h-10 sm:w-10">
                         <svg
                           className="h-5 w-5 text-white sm:h-6 sm:w-6"
                           viewBox="0 0 24 24"
@@ -81,43 +83,13 @@ export default function Allprojects() {
                       </h3>
                     </div>
                   </div>
-
                 </div>
 
                 <div className="pointer-events-none h-8 w-full  from-sky-100/40 via-indigo-100/35 to-sky-200/55 [clip-path:ellipse(72%_90%_at_45%_100%)] sm:h-10" />
 
                 <div className="flex flex-col gap-3 border-t border-slate-100/90 bg-white/70 px-5 py-4 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-4">
                   <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-500 sm:text-base">
-                    <div className="inline-flex items-center gap-2.5">
-                      <svg
-                        className="h-4 w-4 text-slate-400"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        aria-hidden
-                      >
-                        <rect
-                          x="3"
-                          y="4"
-                          width="18"
-                          height="17"
-                          rx="2.5"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                        />
-                        <path
-                          d="M8 2.8v3M16 2.8v3M3 9.5h18"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                        />
-                        <circle cx="8.5" cy="14.2" r="1" fill="currentColor" />
-                        <circle cx="12.5" cy="14.2" r="1" fill="currentColor" />
-                        <circle cx="16.5" cy="14.2" r="1" fill="currentColor" />
-                      </svg>
-                      <span className="whitespace-nowrap">
-                        Updated 2 days ago
-                      </span>
-                    </div>
+                    
 
                     <div className="inline-flex items-center gap-2.5">
                       <svg
@@ -148,7 +120,7 @@ export default function Allprojects() {
                           strokeLinejoin="round"
                         />
                       </svg>
-                      <span className="whitespace-nowrap">Team: 8 members</span>
+                      <span className="whitespace-nowrap">Team: {p.members.length} {p.members.length > 1 ? "members" : "member"}</span>
                     </div>
                   </div>
 

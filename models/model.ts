@@ -63,16 +63,20 @@ const ProjectSchema = new mongoose.Schema(
 const taskSchema = new mongoose.Schema(
   {
     name: String,
-    belongTo: {
+    description: String,
+
+    belongsTo: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project",
       required: true,
     },
 
-    members: {
+    members: [{
       type: mongoose.Types.ObjectId,
       ref: "User",
-    },
+    }],
+
+    default: []
   },
   {
     timestamps: true,

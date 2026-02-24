@@ -5,6 +5,7 @@ import InviteMembersModal from "@/components/inviteMembersModal";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/nav";
+import { useAuth } from "@/lib/authContext";
 
 interface Project {
   _id: string;
@@ -21,6 +22,9 @@ export default function Project() {
   const [loading, setloading] = useState(true);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [showMembersModal, setShowMembersModal] = useState(false);
+  const {user} = useAuth();
+
+  // fetch all task for admin and assign task for user
 
   async function fetchProject() {
     try {
@@ -31,6 +35,7 @@ export default function Project() {
       }
       const data = await res.json();
       setProject(data.project);
+      console.log(data.project);
     } catch (error) {
       console.error(error);
     } finally {
@@ -63,7 +68,7 @@ export default function Project() {
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
+            {(user?.id !== project.createdBy) ? null :  <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowTaskForm(true)}
                 className="px-3 py-2 rounded-md bg-slate-900 text-white text-sm cursor-pointer"
@@ -76,11 +81,11 @@ export default function Project() {
               >
                 Invite Member
               </button>
-            </div>
+            </div>}
           </div>
 
           <div className="mt-8">
-            <h2 className="text-sm font-medium text-slate-700">Tasks</h2>
+            <h2 className="text-sm font-medium text-slate-700">{(user?.id !== project.createdBy)? "My Task" : "All Task"}</h2>
             <div className="mt-3 text-sm text-slate-500">
               No tasks yet. Create one to get started.
             </div>
@@ -91,7 +96,7 @@ export default function Project() {
       {showTaskForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-2xl">
-            <TaskCreationForm setShowForm={setShowTaskForm} />
+            <TaskCreationForm setShowForm={setShowTaskForm} projectId = {id as string} />
           </div>
         </div>
       )}
