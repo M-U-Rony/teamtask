@@ -179,7 +179,7 @@ export default function Navbar() {
       <Toaster />
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link
-          href="/"
+          href="/dashboard"
           className="text-xl font-semibold tracking-tight text-slate-900"
         >
           TeamTask

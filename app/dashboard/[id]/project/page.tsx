@@ -15,27 +15,41 @@ interface Project {
   createdBy: string;
 }
 
+interface Task {
+  _id: string;
+  name: string;
+  description?: string;
+  members: string[];
+}
+
 export default function Project() {
   const { id } = useParams();
   const [project, setProject] = useState<Project | null>(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const router = useRouter();
   const [loading, setloading] = useState(true);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [showMembersModal, setShowMembersModal] = useState(false);
   const {user} = useAuth();
 
-  // fetch all task for admin and assign task for user
-
   async function fetchProject() {
     try {
-      const res = await fetch(`/api/projects/${id}`, { method: "GET" });
-      if (!res.ok) {
+      const [projectres , taskres]= await Promise.all([
+        fetch(`/api/projects/${id}`, { method: "GET" }),
+        fetch(`/api/projects/${id}/allTask`, { method: "GET" })
+      ]);
+
+      if (!projectres.ok) {
         router.push("/dashboard");
         return;
       }
-      const data = await res.json();
-      setProject(data.project);
-      console.log(data.project);
+
+      const [projectData, taskData] = await Promise.all([projectres.json(),taskres.json()]) ;
+      setProject(projectData.project);
+      setTasks(taskData?.data ?? []);
+
+      // console.log(taskData.data);
+     
     } catch (error) {
       console.error(error);
     } finally {
@@ -86,9 +100,38 @@ export default function Project() {
 
           <div className="mt-8">
             <h2 className="text-sm font-medium text-slate-700">{(user?.id !== project.createdBy)? "My Task" : "All Task"}</h2>
-            <div className="mt-3 text-sm text-slate-500">
-              No tasks yet. Create one to get started.
-            </div>
+            {tasks.length > 0 ? (
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {tasks.map((task) => (
+                  <article
+                    key={task._id}
+                    className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                  >
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="inline-flex items-center rounded-full bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-700 ring-1 ring-sky-100">
+                        Task
+                      </span>
+                      <span className="text-xs text-slate-400">
+                        {task.members?.length ?? 0} assignee{(task.members?.length ?? 0) === 1 ? "" : "s"}
+                      </span>
+                    </div>
+                    <h3 className="text-base font-semibold text-slate-900">
+                      {task.name}
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">
+                      {task.description?.trim() || "No description provided."}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+                <p className="text-sm font-medium text-slate-700">No tasks yet</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Create one to get started.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

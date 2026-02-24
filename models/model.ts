@@ -74,9 +74,9 @@ const taskSchema = new mongoose.Schema(
     members: [{
       type: mongoose.Types.ObjectId,
       ref: "User",
+      default: []
     }],
 
-    default: []
   },
   {
     timestamps: true,
