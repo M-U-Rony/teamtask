@@ -3,10 +3,17 @@
 import Link from "next/link";
 import Navbar from "@/components/nav";
 import { useAuth } from "@/lib/authContext";
+import { useRouter } from "next/navigation";
+
 
 export default function Home() {
 
   const {user} = useAuth();
+  const router = useRouter();
+
+  if(user){
+    router.push('/dashboard')
+  }
   return (
     <main className="min-h-screen bg-white text-slate-900">
       <Navbar />

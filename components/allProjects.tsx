@@ -1,6 +1,5 @@
 "use client";
-
-import mongoose from "mongoose";
+import { useAuth } from "@/lib/authContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -8,12 +7,17 @@ interface Project {
   _id: string;
   name: string;
   description?: string;
-  members: Array<mongoose.Types.ObjectId>
+  members: string[];
+  createdBy: string;
 }
 
 export default function Allprojects() {
   const [allprojects, setAllProjects] = useState<Project[]>([]);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const router = useRouter();
+  const { user } = useAuth();
+  const currentUserId =
+    user?.id ?? (user as unknown as { userId?: string } | null)?.userId;
 
   useEffect(() => {
     async function fetchProject() {
@@ -40,6 +44,27 @@ export default function Allprojects() {
 
     fetchProject();
   }, []);
+
+  async function deleteProject(projectId: string) {
+    try {
+      const res = await fetch(`/api/projects/${projectId}/delete`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        throw new Error(
+          `Failed to delete project`,
+        );
+      }
+
+      setAllProjects((prev) =>
+        prev.filter((project) => project._id !== projectId),
+      );
+      setOpenMenuId(null);
+    } catch (error) {
+      console.error("Error deleting project:", error);
+    }
+  }
 
   return (
     <div className="">
@@ -87,11 +112,9 @@ export default function Allprojects() {
 
                 <div className="pointer-events-none h-8 w-full  from-sky-100/40 via-indigo-100/35 to-sky-200/55 [clip-path:ellipse(72%_90%_at_45%_100%)] sm:h-10" />
 
-                <div className="flex flex-col gap-3 border-t border-slate-100/90 bg-white/70 px-5 py-4 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-4">
-                  <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-500 sm:text-base">
-                    
-
-                    <div className="inline-flex items-center gap-2.5">
+                <div className="flex items-center justify-between gap-3 border-t border-slate-100/90 bg-white/70 px-5 py-4 backdrop-blur-sm sm:px-6 sm:py-4">
+                  <div className="min-w-0 flex items-center gap-x-6 gap-y-2 text-sm text-slate-500 sm:text-base">
+                    <div className="inline-flex items-center gap-2.5 min-w-0">
                       <svg
                         className="h-4 w-4 text-slate-400"
                         viewBox="0 0 24 24"
@@ -124,15 +147,48 @@ export default function Allprojects() {
                     </div>
                   </div>
 
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      router.push(`/dashboard/${p._id}/project`);
-                    }}
-                    className="w-full sm:w-auto rounded-md bg-slate-900 text-white py-2 px-4 whitespace-nowrap cursor-pointer sm:self-auto"
-                  >
-                    View Project
-                  </button>
+                  <div className="relative z-20 h-9 w-9 shrink-0">
+                    {String(p.createdBy) === currentUserId ? (
+                      <>
+                      <button
+                        type="button"
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/90 bg-white text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-sky-50 hover:text-sky-700"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        setOpenMenuId((prev) => (prev === p._id ? null : p._id));
+                      }}
+                      aria-haspopup="menu"
+                      aria-expanded={openMenuId === p._id}
+                      aria-label="Project actions"
+                    >
+                      <svg
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden
+                      >
+                        <circle cx="12" cy="5" r="1.75" fill="currentColor" />
+                        <circle cx="12" cy="12" r="1.75" fill="currentColor" />
+                        <circle cx="12" cy="19" r="1.75" fill="currentColor" />
+                      </svg>
+                    </button>
+
+                    {openMenuId === p._id ? (
+                      <button
+                        type="button"
+                        className="absolute bottom-full right-0 mb-2 z-30 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm text-red-600 shadow-sm hover:bg-red-50"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteProject(p._id);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    ) : null}
+                      </>
+                    ) : null}
+                  </div>
                 </div>
               </div>
             </li>
