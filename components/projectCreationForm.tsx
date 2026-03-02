@@ -5,13 +5,19 @@ import toast, { Toaster } from "react-hot-toast";
 
 type ProjectCreationFormProps = {
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
+  project?: {
+    _id: string;
+    name: string;
+    description?: string;
+  };
 };
 
 export default function ProjectCreationForm({
   setShowForm,
+  project,
 }: ProjectCreationFormProps) {
-  const [name, setname] = useState("");
-  const [description, setDescription] = useState("");
+  const [name, setname] = useState(project?.name || "");
+  const [description, setDescription] = useState(project?.description || "");
   const [loading, setLoading] = useState(false);
 
   async function handleCreate(e: React.SubmitEvent<HTMLFormElement>) {
@@ -24,8 +30,9 @@ export default function ProjectCreationForm({
     };
 
     try {
-      const res = await fetch("/api/projects", {
-        method: "POST",
+
+      const res = await fetch(`/api/projects${project ? `/${project._id}/update` : ""}`, {
+        method: project ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
@@ -58,10 +65,10 @@ export default function ProjectCreationForm({
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-xl sm:text-2xl font-semibold text-slate-900">
-              Create New Project
+              {project ? "Edit Project" : "Create New Project"}
             </h1>
             <p className="mt-1 text-sm text-slate-500">
-              Add a name, description and invite teammates.
+              {project ? "Update the project details and invite teammates." : "Add a name, description and invite teammates."}
             </p>
           </div>
 
@@ -123,7 +130,7 @@ export default function ProjectCreationForm({
                 type="submit"
                 className="w-full rounded-md bg-slate-900 text-white py-2 cursor-pointer"
               >
-                Create project
+                  {project ? "Update Project" : "Create Project"}
               </button>
             )}
           </div>

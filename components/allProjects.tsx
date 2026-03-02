@@ -69,12 +69,12 @@ export default function Allprojects() {
   return (
     <div className="">
       {allprojects && allprojects.length > 0 ? (
-        <ul className="flex gap-4 flex-wrap">
+        <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {allprojects.map((p) => (
             <li
               key={p._id}
               onClick={() => router.push(`/dashboard/${p._id}/project`)}
-              className="relative w-full sm:w-auto max-w-sm mx-auto overflow-hidden group cursor-pointer"
+              className="relative w-full overflow-hidden group cursor-pointer"
             >
               <div className="relative z-10 overflow-hidden rounded-[1.75rem] border border-sky-100/90 bg-linear-to-br from-white via-slate-50/90 to-slate-200/60 shadow-[0_24px_45px_-30px_rgba(15,23,42,0.5)] transition-all duration-300 group-hover:-translate-y-1 ">
                 <div className="p-3 sm:p-4">

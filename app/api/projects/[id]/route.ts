@@ -18,14 +18,13 @@ export async function GET(req:NextRequest,{params }: { params: { id: string } })
 
       const { id } = await params;
       
-      const project = await Project.findById(id).lean();
+      const project = await Project.findById(id).populate("members","name email");
 
        if(!project){
         return NextResponse.json({success: false,message: "Not found"},{status: 404});
        }
 
-    
-       const isBelong = project.members.some((p: any) => String(p) === user.userId);
+        const isBelong = project.members.some((member:any) => member._id.toString() === user.userId.toString());
 
        if(!isBelong){
         return NextResponse.json({success: false,message: "forbidden"},{status: 403});

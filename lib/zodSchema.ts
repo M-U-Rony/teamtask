@@ -35,6 +35,11 @@ export const projectSchema = z.object({
   members: z.array(objectIdSchema).optional().default([]),
 })
 
+export const updateProjectSchema = z.object({
+  name: z.string().min(2).trim(),
+  description: z.string().trim().optional(),
+})
+
 export const invitationSchema =  z.object({
   email: z.email()
 })
@@ -57,4 +62,8 @@ export const taskSchema = z.object({
   name: z.string().min(2).trim(),
   description: z.string().trim().optional(),
   members: z.array(objectIdSchema).optional().default([]),
+})
+
+export const removeMemberSchema = z.object({
+  memberId: z.string().trim(),
 })
