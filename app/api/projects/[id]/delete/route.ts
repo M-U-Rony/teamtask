@@ -30,7 +30,7 @@ export async function DELETE(req:NextRequest,{params }: { params: { id: string }
         return NextResponse.json({success: false,message: "Forbidden"},{status: 403});
       }
 
-        await Task.deleteMany({ projectId: new mongoose.Types.ObjectId(id) });
+        await Task.deleteMany({ belongsTo: id });
         await Project.findByIdAndDelete(id);
         
      return NextResponse.json({success: true},{status: 200});

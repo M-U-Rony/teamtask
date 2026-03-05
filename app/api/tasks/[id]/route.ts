@@ -24,7 +24,10 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
         if(!task){
             return NextResponse.json({success: false, message: "Task not found"},{status: 404});
         }
-   
+
+        if(task.createdBy.toString() !== user.userId)
+            return NextResponse.json({success: false, message: "Unauthorized"},{status: 401});
+
         await Task.findByIdAndDelete(id);
 
         return NextResponse.json({success: true, message: "Task deleted successfully"},{status: 200});
@@ -56,6 +59,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         if(!task){
             return NextResponse.json({success: false, message: "Task not found"},{status: 404});
         }
+
+        if(task.createdBy.toString() !== user.userId)
+            return NextResponse.json({success: false, message: "Unauthorized"},{status: 401});
    
         const body = await req.json();
         const parsed = updateTaskStatusSchema.safeParse(body);

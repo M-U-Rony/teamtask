@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
         );
     }
 
-    const user = await User.findById(auth.userId).select("_id name email role isDisabled").lean();
+    const user = await User.findById(auth.userId).select("_id name email").lean();
 
       if (!user) {
     return NextResponse.json(
@@ -26,13 +26,6 @@ export async function GET(req: NextRequest) {
       { status: 404 }
     );
   }
-
-    if (user.isDisabled) {
-      return NextResponse.json(
-        { success: false, error: {message: "Account disabled" } },
-        { status: 403 }
-      );
-    }
 
    return NextResponse.json(
     {

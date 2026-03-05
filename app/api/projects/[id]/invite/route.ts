@@ -1,7 +1,7 @@
 import DBconnect from "@/lib/db";
 import { authMiddleware } from "@/lib/middleware";
 import { invitationSchema} from "@/lib/zodSchema";
-import { Invitation, User } from "@/models/model";
+import { Invitation, Project, User } from "@/models/model";
 import { NextRequest, NextResponse } from "next/server";
 
 
@@ -31,6 +31,16 @@ export async function POST(req:NextRequest,{params }: { params: { id: string }})
 
 
     const  {email} = parsed.data;
+
+    const project = await Project.findById(id);
+
+    if (!project) {
+        return NextResponse.json({ success: false, message: "Project not found" }, { status: 404 });
+    }
+
+    if (project.createdBy.toString() !== user.userId) {
+        return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
 
     const member = await User.findOne({email: email}).select("_id name email").lean();
     const curUser = await User.findById(user.userId).select("name").lean();

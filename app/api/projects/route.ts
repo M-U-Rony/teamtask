@@ -68,9 +68,7 @@ export async function GET(req:NextRequest) {
        const allProjects = await Project.find().lean();
 
 
-       const myProject = allProjects.filter((p) => 
-        p.members.some(m => m.equals(new mongoose.Types.ObjectId(user.userId)))
-        );
+       const myProject = Project.find({ members: user.userId }).lean();
 
     return NextResponse.json({success: true, projects: myProject},{status: 200});
         

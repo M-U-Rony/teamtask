@@ -32,6 +32,16 @@ export async function PATCH(req:NextRequest,{params }: { params: { id: string } 
 
     const { name, description} = parsed.data;
 
+    const project = await Project.findById(id);
+
+    if (!project) {
+        return NextResponse.json({ success: false, message: "Project not found" }, { status: 404 });
+    }
+
+    if (project.createdBy.toString() !== user.userId) {
+        return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+
     const updatedProject = await Project.findByIdAndUpdate(
         id,
         {

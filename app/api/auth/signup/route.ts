@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        data: { name: user.name, email: user.email, role: user.role },
+        data: { name: user.name, email: user.email},
         message: "Signup successful",
       },
       { status: 201 }
