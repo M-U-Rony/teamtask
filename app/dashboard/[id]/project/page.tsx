@@ -21,6 +21,7 @@ interface Project {
 interface Task {
   _id: string;
   name: string;
+  status: string;
   description?: string;
   members: string[];
 }
@@ -29,6 +30,7 @@ export default function Project() {
   const { id } = useParams();
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [openTaskMenuId, setOpenTaskMenuId] = useState<string | null>(null);
   const router = useRouter();
   const [loading, setloading] = useState(true);
   const [showTaskForm, setShowTaskForm] = useState(false);
@@ -59,6 +61,45 @@ export default function Project() {
       console.error(error);
     } finally {
       setloading(false);
+    }
+  }
+
+  async function handleDeleteTask(taskId: string) {
+    try {
+      const response = await fetch(`/api/tasks/${taskId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete task");
+      }
+
+      fetchProject();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function handleTaskStatus(taskId: string, value: string) {
+
+
+    try {
+      
+      const res = await fetch(`/api/tasks/${taskId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: value }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to update task status");
+      }
+
+      fetchProject();
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -125,9 +166,94 @@ export default function Project() {
                         <span className="inline-flex items-center rounded-full bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-700 ring-1 ring-sky-100">
                           Task
                         </span>
-                        <span className="text-xs text-slate-400">
-                          {task.members?.length ?? 0} assignee{(task.members?.length ?? 0) === 1 ? "" : "s"}
-                        </span>
+
+                        {user?.id === project.createdBy ? 
+
+                        <p
+                          className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ${
+                            task.status === "not-started"
+                              ? "bg-red-50 text-red-700 ring-red-100"
+                              : task.status === "done"
+                                ? "bg-green-50 text-green-700 ring-green-100"
+                                : "bg-sky-50 text-sky-700 ring-sky-100"
+                          }`}
+                        >
+                          {task.status}
+                        </p>
+                        
+                        :
+
+                        <div className="ml-auto mr-2 flex items-center gap-2">
+                          <label
+                            htmlFor={`task-status-${task._id}`}
+                            className="text-xs font-medium text-slate-600"
+                          >
+                            Status
+                          </label>
+                          <select
+                            name="status"
+                            id={`task-status-${task._id}`}
+                            defaultValue={task.status}
+                            className={`rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs outline-none transition focus:border-slate-400 ${
+                              task.status === "not-started"
+                                ? "text-red-700"
+                                : task.status === "done"
+                                  ? "text-green-700"
+                                  : "text-slate-700"
+                            }`}
+                            onChange={(e) => handleTaskStatus(task._id, e.target.value)}
+                          >
+                            <option value="not-started" className="text-red-800">Not Started</option>
+                            <option value="in-progress" className="text-blue-600">In Progress</option>
+                            <option value="done" className="text-green-700">Done</option>
+                          </select>
+                        </div>
+                        }
+
+
+
+
+                        {user?.id === project.createdBy ? (
+                          <div className="relative">
+                            <button
+                              type="button"
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200/90 bg-white text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-sky-50 hover:text-sky-700"
+                              onClick={() =>
+                                setOpenTaskMenuId((prev) =>
+                                  prev === task._id ? null : task._id,
+                                )
+                              }
+                              aria-label="Task options"
+                            >
+                              <svg
+                                className="h-5 w-5"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden
+                              >
+                                <circle cx="12" cy="5" r="1.75" fill="currentColor" />
+                                <circle cx="12" cy="12" r="1.75" fill="currentColor" />
+                                <circle cx="12" cy="19" r="1.75" fill="currentColor" />
+                              </svg>
+                            </button>
+
+                            {openTaskMenuId === task._id && (
+                              <div className="absolute right-0 top-full mt-2 w-40 rounded-md border border-slate-200 bg-white shadow-lg">
+                                <button
+                                  type="button"
+                                  className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                                  onClick={() => {
+                                    setOpenTaskMenuId(null);
+                                    handleDeleteTask(task._id);
+                                  }}
+                                >
+                                  Delete task
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ) : null}
                       </div>
                       <h3 className="text-base font-semibold text-slate-900">
                         {task.name}

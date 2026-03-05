@@ -107,7 +107,7 @@ export default function Navbar() {
       return;
     }
 
-    window.location.reload();
+    router.push("/login");
   }
 
   async function acceptInvite(
@@ -240,7 +240,7 @@ export default function Navbar() {
                             key={n._id}
                             className="p-3 hover:bg-slate-50 border-b last:border-b-0 flex items-start gap-3"
                           >
-                            <div className="flex-shrink-0 h-9 w-9 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm font-semibold">
+                            <div className="shrink-0 h-9 w-9 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm font-semibold">
                               {n.invitedBy.charAt(0)}
                             </div>
 

@@ -44,6 +44,10 @@ export async function POST(req:NextRequest,{params }: { params: { id: string } }
         return NextResponse.json({success: false,message: "Forbidden"},{status: 403});
       }
 
+      if(members.length == 0){
+        return NextResponse.json({success: false,message: "At least one member is required"},{status: 400});
+      }
+
       const newTask = await Task.create({
         name,
         description,

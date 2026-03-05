@@ -6,12 +6,12 @@ import Allmembers from "./allmembersmodal";
 
 type taskCreationFormProps = {
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
-  projectId: string
+  projectId: string;
 };
 
 export default function TaskCreationForm({
   setShowForm,
-  projectId
+  projectId,
 }: taskCreationFormProps) {
   const [name, setname] = useState("");
   const [description, setDescription] = useState("");
@@ -39,19 +39,18 @@ export default function TaskCreationForm({
       const result = await res.json();
 
       if (!res.ok) {
-        toast.error(result.error?.message || "Project Creation failed");
-        setShowForm(false);
+        toast.error(result?.message || result?.error?.message || "Task Creation failed");
         return;
       }
 
       toast.success(result.message || "task Created");
       setname("");
       setDescription("");
+      setShowForm(false);
     } catch (error) {
       toast.error("task Creation failed");
     } finally {
       setLoading(false);
-      setShowForm(false);
     }
   }
 

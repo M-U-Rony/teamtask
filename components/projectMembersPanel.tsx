@@ -17,9 +17,10 @@ interface ProjectMemberRowProps {
   member: string | Member;
   onRemove: (memberId: string) => void;
   canManageMembers: boolean;
+  projectAdminId: string
 }
 
-function ProjectMemberRow({ member, onRemove, canManageMembers }: ProjectMemberRowProps) {
+function ProjectMemberRow({ member, onRemove, canManageMembers,projectAdminId }: ProjectMemberRowProps) {
   const [openMenu, setOpenMenu] = useState(false);
 
   const memberId = typeof member === "string" ? member : member?._id || "";
@@ -31,11 +32,12 @@ function ProjectMemberRow({ member, onRemove, canManageMembers }: ProjectMemberR
         <span className="h-5 w-5 shrink-0 rounded-full border-2 border-slate-400 bg-gray-400" />
         <p className="truncate text-md leading-none text-black">
           {memberName}
+          {memberId === projectAdminId ? " (admin)": ""}
         </p>
       </div>
 
       <div className="relative z-20 h-9 w-5 shrink-0">
-        {canManageMembers ?
+        {(canManageMembers && memberId !== projectAdminId) ?
         <button
           type="button"
           className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/90 bg-white text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-sky-50 hover:text-sky-700"
@@ -86,7 +88,7 @@ export default function ProjectMembersPanel({ members, projectId, projectAdminId
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ memberId }),
+        body: JSON.stringify({ memberId,projectAdminId }),
       });
 
       if (!response.ok) {
@@ -112,6 +114,7 @@ export default function ProjectMembersPanel({ members, projectId, projectAdminId
             member={member}
             onRemove={handleRemove}
             canManageMembers={canManageMembers}
+            projectAdminId = {projectAdminId}
           />
         ))}
       </ul>

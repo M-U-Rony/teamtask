@@ -30,7 +30,11 @@ export async function POST(req:NextRequest,{params }: { params: { id: string } }
            }
 
 
-    const { memberId} = parsed.data;
+    const { memberId, projectAdminId} = parsed.data;
+
+    if(projectAdminId === memberId){
+        return NextResponse.json({success: false,message: "Can't remove admin"},{status: 403});
+    }
 
     const updatedProject = await Project.findByIdAndUpdate(
         id,

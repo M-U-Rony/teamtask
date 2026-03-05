@@ -31,7 +31,7 @@ export async function GET(
       );
     }
 
-    const allTask = await Task.find({ belongsTo: id }).select("_id name description members").lean();
+    const allTask = await Task.find({ belongsTo: id }).select("_id name description members status").lean();
 
     if (!allTask) {
       return NextResponse.json(

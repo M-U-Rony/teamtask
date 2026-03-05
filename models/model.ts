@@ -65,6 +65,12 @@ const taskSchema = new mongoose.Schema(
     name: String,
     description: String,
 
+    status: {
+      type: String,
+      enum: ["not-started", "in-progress", "done"],
+      default: "not-started",
+    },
+
     belongsTo: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project",

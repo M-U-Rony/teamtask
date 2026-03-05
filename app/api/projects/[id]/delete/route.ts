@@ -38,7 +38,7 @@ export async function DELETE(req:NextRequest,{params }: { params: { id: string }
     } catch (error) {
         console.log(error)
         return NextResponse.json(
-            { success: false, message: "Erron in creating task" },
+            { success: false, message: "Error in deleting project" },
             { status: 500 }
         );
     }

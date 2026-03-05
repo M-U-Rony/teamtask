@@ -66,4 +66,9 @@ export const taskSchema = z.object({
 
 export const removeMemberSchema = z.object({
   memberId: z.string().trim(),
+  projectAdminId: z.string().trim()
+})
+
+export const updateTaskStatusSchema = z.object({
+  status: z.enum(["not-started", "in-progress", "done"])
 })
