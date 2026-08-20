@@ -65,10 +65,17 @@ export async function GET(req:NextRequest) {
 
        await DBconnect();
        
-       const allProjects = await Project.find().lean();
+       const allProjects = await Project.find();
+    //    console.log(allProjects)
 
 
-       const myProject = Project.find({ members: user.userId }).lean();
+       const myProject = allProjects.filter((pr)=>{
+            if(pr.members.includes(new mongoose.Types.ObjectId(user.userId))){
+                return pr
+            }
+       });
+
+    //    console.log(myProject)
 
     return NextResponse.json({success: true, projects: myProject},{status: 200});
         

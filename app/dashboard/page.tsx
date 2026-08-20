@@ -1,12 +1,43 @@
 "use client";
 
 import Navbar from "@/components/nav";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import ProjectCreationForm from "@/components/projectCreationForm";
 import Allprojects from "@/components/allProjects";
+import { useAuth } from "@/lib/authContext";
 
 export default function Dashboard() {
   const [showForm, setShowForm] = useState(false);
+  const {user }= useAuth();
+  const [ws, setWs] = useState<WebSocket | null>(null);
+
+    useEffect(() => {
+    
+    const socket = new WebSocket("ws://localhost:8080");
+
+    socket.onopen = () => {
+    const authMessage = {
+    type: 'auth',
+    userId: user?.id 
+  };
+
+  socket.send(JSON.stringify(authMessage));
+    };
+
+    socket.onmessage = (event) => {
+      console.log("📩 Message from server:", event.data);
+    };
+
+    socket.onclose = () => {
+      console.log("❌ Disconnected from WebSocket server");
+    };
+
+    setWs(socket);
+
+    return () => {
+      socket.close();
+    };
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-slate-50">

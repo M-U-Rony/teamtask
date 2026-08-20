@@ -69,127 +69,81 @@ export default function Allprojects() {
   return (
     <div className="">
       {allprojects && allprojects.length > 0 ? (
-        <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {allprojects.map((p) => (
             <li
               key={p._id}
               onClick={() => router.push(`/dashboard/${p._id}/project`)}
-              className="relative w-full overflow-hidden group cursor-pointer"
+              className="group relative flex cursor-pointer flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-200 hover:border-slate-300 hover:shadow-md"
             >
-              <div className="relative z-10 overflow-hidden rounded-[1.75rem] border border-sky-100/90 bg-linear-to-br from-white via-slate-50/90 to-slate-200/60 shadow-[0_24px_45px_-30px_rgba(15,23,42,0.5)] transition-all duration-300 group-hover:-translate-y-1 ">
-                <div className="p-3 sm:p-4">
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <div className="shrink-0">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-linear-to-br from-sky-500 to-indigo-600 shadow-[0_14px_24px_-14px_rgba(37,99,235,0.9)] sm:h-10 sm:w-10">
-                        <svg
-                          className="h-5 w-5 text-white sm:h-6 sm:w-6"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          aria-hidden
-                        >
-                          <path
-                            d="M13.2 2.6c3.6-.4 7.8.2 7.8.2s.6 4.2.2 7.8c-.3 2.6-1.6 4.6-3.9 6.8l-3-3-3 3-3-3c2.2-2.2 4.2-3.6 6.9-3.9z"
-                            fill="currentColor"
-                            opacity="0.95"
-                          />
-                          <circle cx="14.8" cy="8.2" r="1.7" fill="#3B82F6" />
-                          <path
-                            d="M9.2 14.7l-4.6 1.9 1.8-4.7 2.8 2.8zm2 2l-1.9 4.7 4.7-1.8-2.8-2.9z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                      </div>
+              <div>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-100 bg-slate-50 text-sm font-semibold text-slate-700 transition-colors group-hover:border-sky-100 group-hover:bg-sky-50 group-hover:text-sky-600">
+                      {p.name.charAt(0).toUpperCase()}
                     </div>
-
-                    <div className="min-w-0 flex-1">
-                      <h3 className="truncate text-base font-semibold tracking-tight text-slate-900 sm:text-lg">
+                    <div className="min-w-0">
+                      <h3 className="truncate text-base font-semibold text-slate-900 transition-colors group-hover:text-sky-600">
                         {p.name}
                       </h3>
                     </div>
                   </div>
-                </div>
 
-                <div className="pointer-events-none h-8 w-full  from-sky-100/40 via-indigo-100/35 to-sky-200/55 [clip-path:ellipse(72%_90%_at_45%_100%)] sm:h-10" />
-
-                <div className="flex items-center justify-between gap-3 border-t border-slate-100/90 bg-white/70 px-5 py-4 backdrop-blur-sm sm:px-6 sm:py-4">
-                  <div className="min-w-0 flex items-center gap-x-6 gap-y-2 text-sm text-slate-500 sm:text-base">
-                    <div className="inline-flex items-center gap-2.5 min-w-0">
-                      <svg
-                        className="h-4 w-4 text-slate-400"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        aria-hidden
-                      >
-                        <path
-                          d="M15.5 20.5v-1.7a3.5 3.5 0 00-3.5-3.5H6.8a3.5 3.5 0 00-3.5 3.5v1.7"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <circle
-                          cx="9.4"
-                          cy="8.6"
-                          r="3.4"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                        />
-                        <path
-                          d="M20.5 20.5v-1.7a3.5 3.5 0 00-2.7-3.4M14.5 5.3a3.4 3.4 0 010 6.6"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      <span className="whitespace-nowrap">Team: {p.members.length} {p.members.length > 1 ? "members" : "member"}</span>
-                    </div>
-                  </div>
-
-                  <div className="relative z-20 h-9 w-9 shrink-0">
+                  <div className="relative ml-4 shrink-0">
                     {String(p.createdBy) === currentUserId ? (
                       <>
-                      <button
-                        type="button"
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/90 bg-white text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-sky-50 hover:text-sky-700"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                        setOpenMenuId((prev) => (prev === p._id ? null : p._id));
-                      }}
-                      aria-haspopup="menu"
-                      aria-expanded={openMenuId === p._id}
-                      aria-label="Project actions"
-                    >
-                      <svg
-                        className="h-5 w-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden
-                      >
-                        <circle cx="12" cy="5" r="1.75" fill="currentColor" />
-                        <circle cx="12" cy="12" r="1.75" fill="currentColor" />
-                        <circle cx="12" cy="19" r="1.75" fill="currentColor" />
-                      </svg>
-                    </button>
+                        <button
+                          type="button"
+                          className="flex h-8 w-8 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenMenuId((prev) => (prev === p._id ? null : p._id));
+                          }}
+                          aria-haspopup="menu"
+                          aria-expanded={openMenuId === p._id}
+                        >
+                          <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M5 10a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM11.5 10a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM18 10a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                          </svg>
+                        </button>
 
-                    {openMenuId === p._id ? (
-                      <button
-                        type="button"
-                        className="absolute bottom-full right-0 mb-2 z-30 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm text-red-600 shadow-sm hover:bg-red-50"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteProject(p._id);
-                        }}
-                      >
-                        Delete
-                      </button>
-                    ) : null}
+                        {openMenuId === p._id && (
+                          <div className="absolute right-0 top-10 z-20 w-36 rounded-lg border border-slate-200 bg-white p-1 shadow-lg">
+                            <button
+                              type="button"
+                              className="flex w-full items-center rounded-md px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteProject(p._id);
+                              }}
+                            >
+                              Delete project
+                            </button>
+                          </div>
+                        )}
                       </>
                     ) : null}
                   </div>
                 </div>
+
+                {p.description && (
+                  <p className="mt-4 line-clamp-2 text-sm leading-relaxed text-slate-500">
+                    {p.description}
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
+                <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                  <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                  <span>{p.members.length} {p.members.length === 1 ? "member" : "members"}</span>
+                </div>
+                
+                <span className="flex items-center gap-1 text-xs font-semibold text-sky-600 opacity-0 transition-opacity group-hover:opacity-100">
+                  View <span aria-hidden="true">&rarr;</span>
+                </span>
               </div>
             </li>
           ))}
